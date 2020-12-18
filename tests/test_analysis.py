@@ -14,10 +14,6 @@ def test_audio():
     assert speelysis.Audio
 
 
-def test_high_path_filter():
-    assert speelysis.high_path_filter
-
-
 def test_frame_candidates():
     assert speelysis.frame_candidates
 

@@ -50,3 +50,23 @@ def spl(p: np.float64) -> np.float64:
 
     p0 = 20 * (10**6)
     return 20 * np.log10(p / p0)
+
+
+def high_path_filter(data: np.ndarray, a=0.97) -> np.ndarray:
+    """高域強調のための離散ハイパスフィルタ
+
+    Args:
+        data (numpy.ndarray[int16]): 任意のデータ
+        a (numpy.float64): 係数
+
+    Returns:
+        numpy.ndarray[numpy.float64]: 高域強調
+    """
+
+    n = len(data)
+    y = np.empty(n)
+    y[0] = data[0]
+    for i in range(1, n):
+        y[i] = data[i] - a * data[i-1]
+
+    return y

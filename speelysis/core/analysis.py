@@ -1,20 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Generator
+import itertools
+from .sound import high_path_filter
 
 
-def time_axis(data: np.ndarray, rate: np.float64) -> np.ndarray:
+def time_axis(data: np.ndarray, rate: int) -> np.ndarray:
     """NumPy配列とサンプリング周波数から時間軸を取得する。
 
     Args:
         data (numpy.ndarray[int16]): 任意のデータ
-        rate (numpy.float64): サンプリング周波数
+        rate (int): サンプリング周波数
 
     Returns:
         numpy.ndarray[numpy.float64]: aryと同じ要素数を持つ時間軸
     """
     
     return np.arange(len(data)) / rate
+
+
+def sin_wave(k: int, rate: int, ms: int) -> np.ndarray:
+    """サンプリング周波数rate(Hz)におけるms(ミリ秒)までの周期kのsin波を取得する。
+
+    Args:
+        k (int): 周波数
+        rate (int): サンプリング周波数
+        ms (int): ミリ秒
+    
+    Returns:
+        numpy.ndarray[numpy.float64]: sin波
+    """
+    
+    xs = np.linspace(0, ms / 1000, rate * ms // 1000)
+    w = 2 * np.pi * k
+    return np.sin(xs * w)
 
 
 class Audio:
@@ -35,8 +54,6 @@ class Audio:
         """横軸を時間軸、縦軸をオーディオデータとしたグラフをプロットする。"""
         
         plt.plot(self.times, self.data)
-
-        return
         
     def each_frame(self, n_frame: int, step_ms: int) -> Generator[np.ndarray, None, None]:
         """オーディオデータを指定したフレーム長でずらしながら切り取っていくジェネレータを取得する。
@@ -60,33 +77,13 @@ class Audio:
             i += step
 
     def high_path_filtered(self) -> 'Audio':
-        """高域強調した本クラスのインスタンスを取得する
+        """高域強調したAudioクラスのインスタンスを取得する
         
         Returns:
-            Audio: 高域強調されたAudio
+            Audio: 高域強調後のAudio
         """
 
         return Audio(self.rate, high_path_filter(self.data))
-
-
-def high_path_filter(data: np.ndarray, a = 0.97) -> np.ndarray:
-    """高域強調のための離散ハイパスフィルタ
-
-    Args:
-        data (numpy.ndarray[int16]): 任意のデータ
-        a (numpy.float64): 係数
-
-    Returns:
-        numpy.ndarray[numpy.float64]: 高域強調
-    """
-
-    n = len(data)
-    y = np.empty(n)
-    y[0] = data[0]
-    for i in range(1, n):
-        y[i] = data[i] - a * data[i-1]
-
-    return y
 
 
 def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None, None]:
@@ -112,33 +109,18 @@ def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None
             break
 
 
-def sin_wave(k: int, rate: int, ms: int) -> np.ndarray:
-    """サンプリング周波数rate(Hz)におけるms(ミリ秒)までの周期kのsin波を取得する。
-
-    Args:
-        k (int): 周波数
-        rate (int): サンプリング周波数
-        ms (int): ミリ秒
-    
-    Returns:
-        numpy.ndarray[numpy.float64]: sin波
-    """
-    
-    xs = np.linspace(0, ms / 1000, rate * ms // 1000)
-    w = 2 * np.pi * k
-    return np.sin(xs * w)
-
-
 def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray, None, None]:
     """短時間フーリエ変換
     
-    step_length(ms)ごとに、オーディオデータ(a)をフレーム長(frame_length)の範囲で切り取っていき、
-    それぞれに窓関数(window)を適用し、高速フーリエ変換する。
+    step_length(ms)ごとにオーディオデータを窓関数で切り取っていき、それぞれ高速フーリエ変換する。
 
     Args:
         a (Audio): オーディオ
         window (numpy.ndarray[numpy.float64]): 窓関数
         step_length (int): ずらす長さ(ミリ秒)
+
+    Yields:
+        numpy.ndarray[numpy.complex128]: 実FFT適用後のデータ
     """
     
     for frame in a.each_frame(len(window), step_length):
