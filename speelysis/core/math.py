@@ -9,14 +9,14 @@ def time_axis(data: np.ndarray, rate: int) -> np.ndarray:
         rate (int): サンプリング周波数
 
     Returns:
-        numpy.ndarray[numpy.float64]: aryと同じ要素数を持つ時間軸
+        numpy.ndarray[numpy.float64]: dataと同じ要素数を持つ時間軸
     """
     
     return np.arange(len(data)) / rate
 
 
 def sin_wave(k: int, rate: int, ms: int) -> np.ndarray:
-    """サンプリング周波数rate(Hz)におけるms(ミリ秒)までの周期kのsin波を取得する。
+    """サンプリング周波数rate(Hz)におけるms(ミリ秒)までの周波数kのsin波を取得する。
 
     Args:
         k (int): 周波数

@@ -8,13 +8,15 @@ from .audio import Audio
 def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None, None]:
     """サンプリング周波数をもとに窓関数のフレーム長候補のジェネレータを取得する。
 
-    フレーム長は2のべき乗になる
+    フレーム長は2のべき乗になる。
 
     Args:
         rate (int): サンプリング周波数
+        min_ms: 欲しい最小のフレーム長(ミリ秒)
+        max_ms: 欲しい最大のフレーム長(ミリ秒)
 
     Yields:
-        int: フレーム長(2のべき乗)
+        int: フレーム長(要素数(2のべき乗))
     """
 
     min_n = rate * min_ms / 1000
@@ -31,7 +33,7 @@ def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None
 def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray, None, None]:
     """短時間フーリエ変換
     
-    step_length(ms)ごとにオーディオデータを窓関数で切り取っていき、それぞれ高速フーリエ変換する。
+    step_length(ミリ秒)ごとにオーディオデータを窓関数で切り取っていき、それぞれ高速フーリエ変換する。
 
     Args:
         a (Audio): オーディオ

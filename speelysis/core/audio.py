@@ -26,7 +26,7 @@ class Audio:
         plt.plot(self.times, self.data)
         
     def each_frame(self, n_frame: int, step_ms: int) -> Generator[np.ndarray, None, None]:
-        """オーディオデータを指定したフレーム長でずらしながら切り取っていくジェネレータを取得する。
+        """オーディオデータを指定したフレーム長で切り取っていくジェネレータを取得する。
         
         Args:
             n_frame (int): フレーム長
@@ -47,7 +47,7 @@ class Audio:
             i += step
 
     def high_path_filtered(self) -> 'Audio':
-        """高域強調したAudioクラスのインスタンスを取得する
+        """高域強調したAudioクラスのインスタンスを取得する。
         
         Returns:
             Audio: 高域強調後のAudio

@@ -60,7 +60,7 @@ def high_path_filter(data: np.ndarray, a=0.97) -> np.ndarray:
         a (numpy.float64): 係数
 
     Returns:
-        numpy.ndarray[numpy.float64]: 高域強調
+        numpy.ndarray[numpy.float64]: 高域強調後データ
     """
 
     n = len(data)
