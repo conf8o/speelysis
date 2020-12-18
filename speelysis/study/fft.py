@@ -23,13 +23,19 @@ def fft(w: np.complex128, s: np.ndarray) -> np.ndarray:
     n = len(s)
     if n == 1: return s
 
-    # 高速化が無駄になるため、アサートはコメントアウト
-    # assert w ** n == 1
-    # assert n & (n - 1) == 0
-    
+    # 高速化が無駄になるため、チェックはコメントアウト
+    # 実部を有効桁数10桁で丸めて1と比較。
+    # if np.round(np.real(w ** n), 10) == 1 or n & (n - 1) == 0:
+    #     raise FFTLengthError("FFT Invalid Condition")
 
     f0 = fft(w*w, s[::2])
     f1 = fft(w*w, s[1::2])
 
     return np.concatenate([[f0[j] + w**j*f1[j] for j in range(n//2)],
                            [f0[j] + w**(n/2+j)*f1[j] for j in range(n//2)]])
+
+
+class FFTLengthError(Exception):
+    """FFTの条件についてのエラー"""
+
+    pass
