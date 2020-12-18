@@ -11,7 +11,3 @@ def test_imel_scale():
 
 def test_spl():
     assert speelysis.spl
-
-
-def test_high_path_filter():
-    assert speelysis.high_path_filter
