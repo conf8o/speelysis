@@ -16,7 +16,7 @@ class Audio:
     """
     
     def __init__(self, rate: int, data: np.ndarray):
-        self.data = data
+        self.data = data.astype(np.float64)
         self.rate = rate
         self.times = time_axis(self.data, self.rate)
 
