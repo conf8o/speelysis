@@ -3,6 +3,7 @@ from typing import Generator
 import itertools
 
 from .audio import Audio
+from .sound import mel_scale, imel_scale
 
 
 def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None, None]:
@@ -49,3 +50,83 @@ def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray
         ffted: np.ndarray = np.fft.rfft(windowed)
         
         yield ffted
+
+
+def tri_window(fs: int, n: int, l: np.float64, r: np.float64) -> np.ndarray:
+    """三角窓
+
+    Args:
+        n (int): 要素数
+        l (numpy.float64): 三角窓 左下の点
+        r (numpy.float64): 三角窓 右下の点
+
+    Returns:
+        numpy.ndarray[numpy.float64]: 三角窓
+    """
+
+    l = l * n // fs
+    r = r * n // fs
+
+    edge = int((r - l + 1) // 2)
+    
+    a = np.zeros(int(l))
+    b = np.linspace(0, 1, edge)
+    c = np.linspace(0, 1, edge)[::-1]
+    
+    f = np.concatenate([a, b, c])
+    return np.append(f, np.zeros(n - len(f)))
+        
+
+def mel_filter_bank(fs: int, n: int, n_bins: int, mel_param=700) -> np.ndarray:
+    """メルフィルタバンク
+
+    Args:
+        f (int): 周波数
+        n (int): 離散信号要素数
+        n_bins (int): ビン数
+        mel_param (int): メル尺度の自由パラメータ
+
+    Returns:
+        2D numpy.ndarray[numpy.float64]: メルフィルタバンク
+    """
+
+    mel_scaled = mel_scale(mel_param)
+    imel_scaled = imel_scale(mel_param)
+
+    mel_end = int(mel_scaled(fs)) + 1
+
+    mel_list = np.arange(0, mel_end, mel_end // (n_bins + 1))
+
+    hz_l_iter = iter(mel_list)
+    hz_r_iter = iter(mel_list)
+    next(hz_r_iter)
+    next(hz_r_iter)
+
+    hz_l_iter = (imel_scaled(b)
+                 for b
+                 in hz_l_iter)
+
+    hz_r_iter = (imel_scaled(b)
+                 for b
+                 in hz_r_iter)
+    
+    return np.array([tri_window(fs, n, l, r) 
+                     for l, r 
+                     in zip(hz_l_iter, hz_r_iter)])
+
+def mel_filter_bank_freq(fs: int, n_bins: int, mel_param=700) -> np.ndarray:
+    """メルフィルタバンクの周波数軸
+
+    Args:
+        fs (int): 周波数最大値
+        n_bins (int): ビン数
+
+    Returns:
+        numpy.ndarray[numpy.float64]: メル尺度上で等間隔の周波数軸。三角窓の頂点の値を取る。
+    """
+
+    mel_scaled = mel_scale(mel_param)
+    imel_scaled = imel_scale(mel_param)
+
+    mel_end = mel_scaled(fs)
+    return imel_scaled(np.arange(1, n_bins + 1) * (mel_end / (n_bins + 1)))

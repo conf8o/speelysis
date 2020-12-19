@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Generator
 
-from .sound import high_path_filter
+from .signal import fir
 from .math import time_axis
 
 
@@ -53,5 +53,4 @@ class Audio:
             Audio: 高域強調後のAudio
         """
 
-        return Audio(self.rate, high_path_filter(self.data))
-
+        return Audio(self.rate, fir(self.data))
