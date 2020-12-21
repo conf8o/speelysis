@@ -46,7 +46,7 @@ class Audio:
             yield self.data[i:i+n_frame]
             i += step
 
-    def high_path_filtered(self) -> 'Audio':
+    def high_pass_filtered(self) -> 'Audio':
         """高域強調したAudioクラスのインスタンスを取得する。
         
         Returns:
