@@ -11,8 +11,8 @@ class Audio:
     
     Attributes:
         rate (int): サンプリング周波数
-        data (numpy.ndarray[numpy.int16]): 1次元のデータ
-        times (numpy.ndarray[numpy.int16]): 時間軸
+        data (np.ndarray[shape=(n,)]): 1次元のデータ
+        times (np.ndarray[shape=data.shape, dtype=float]): 時間軸
     """
     
     def __init__(self, rate: int, data: np.ndarray):
@@ -33,7 +33,7 @@ class Audio:
             step_ms (int): ずらす長さ(ミリ秒)
 
         Yields:
-            numpy.ndarray[numpy.int16]: オーディオデータをフレーム長で切り取ったデータ。
+            np.ndarray[shape=(n_frame,)]: オーディオデータをフレーム長で切り取ったデータ。
             step_ms(ミリ秒)ずつずらしながら切り取っていく。
             余った部分は取得しない。
         """

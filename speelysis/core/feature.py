@@ -13,8 +13,8 @@ def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None
 
     Args:
         rate (int): サンプリング周波数
-        min_ms: 欲しい最小のフレーム長(ミリ秒)
-        max_ms: 欲しい最大のフレーム長(ミリ秒)
+        min_ms (int): 欲しい最小のフレーム長(ミリ秒)
+        max_ms (int): 欲しい最大のフレーム長(ミリ秒)
 
     Yields:
         int: フレーム長(要素数(2のべき乗))
@@ -38,11 +38,11 @@ def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray
 
     Args:
         a (Audio): オーディオ
-        window (numpy.ndarray[numpy.float64]): 窓関数
+        window (np.ndarray[shape=(2**p,)]): 窓関数
         step_length (int): ずらす長さ(ミリ秒)
 
     Yields:
-        numpy.ndarray[numpy.complex128]: 実FFT適用後のデータ
+        np.ndarray[shape=(1 + 2**p/2,), dtype=complex]: 実FFT適用後のデータ
     """
     
     for frame in a.each_frame(len(window), step_length):
@@ -52,22 +52,23 @@ def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray
         yield ffted
 
 
-def tri_window(fs: int, n: int, l: np.float64, r: np.float64) -> np.ndarray:
+def tri_window(fs: int, n: int, l: float, r: float) -> np.ndarray:
     """三角窓
 
     Args:
+        fs (int): 最大周波数
         n (int): 要素数
-        l (numpy.float64): 三角窓 左下の点
-        r (numpy.float64): 三角窓 右下の点
+        l (float): 三角窓 左下の周波数
+        r (float): 三角窓 右下の周波数
 
     Returns:
-        numpy.ndarray[numpy.float64]: 三角窓
+        np.ndarray[shape=(n,), dtype=float]: 三角窓
     """
 
     l = l * n // fs
     r = r * n // fs
 
-    edge = int((r - l + 1) // 2)
+    edge = int((r - l + 1) / 2)
     
     a = np.zeros(int(l))
     b = np.linspace(0, 1, edge)
@@ -87,7 +88,7 @@ def mel_filter_bank(fs: int, n: int, n_bins: int, mel_param=700) -> np.ndarray:
         mel_param (int): メル尺度の自由パラメータ
 
     Returns:
-        2D numpy.ndarray[numpy.float64]: メルフィルタバンク
+        np.ndarray[shape=(n, n_bins), dtype=float]: メルフィルタバンク
     """
 
     mel_scaled = mel_scale(mel_param)
@@ -122,7 +123,7 @@ def mel_filter_bank_freq(fs: int, n_bins: int, mel_param=700) -> np.ndarray:
         n_bins (int): ビン数
 
     Returns:
-        numpy.ndarray[numpy.float64]: メル尺度上で等間隔の周波数軸。三角窓の頂点の値を取る。
+        np.ndarray[shape=(n_bins,), dtype=float]: メル尺度上で等間隔の周波数軸。三角窓の頂点の値を取る。
     """
 
     mel_scaled = mel_scale(mel_param)

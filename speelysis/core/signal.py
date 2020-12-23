@@ -5,11 +5,11 @@ def fir(data: np.ndarray, a=0.97) -> np.ndarray:
     """有限インパルス応答
 
     Args:
-        data (numpy.ndarray[int16]): 任意のデータ
-        a (numpy.float64): 係数
+        data (np.ndarray[shape=(n,)]): 任意のデータ
+        a (float): 係数
 
     Returns:
-        numpy.ndarray[numpy.float64]: フィルタ後データ
+        np.ndarray[shape=(n,), dtype=float]: フィルタ後データ
     """
 
     n = len(data)
