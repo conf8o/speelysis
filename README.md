@@ -1,3 +1,3 @@
 # speelysis
 
-A library for speech analysis.
+A library for studying speech analysis.

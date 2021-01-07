@@ -115,6 +115,7 @@ def mel_filter_bank(fs: int, n: int, n_bins: int, mel_param=700) -> np.ndarray:
                      for l, r 
                      in zip(hz_l_iter, hz_r_iter)])
 
+
 def mel_filter_bank_freq(fs: int, n_bins: int, mel_param=700) -> np.ndarray:
     """メルフィルタバンクの周波数軸
 
