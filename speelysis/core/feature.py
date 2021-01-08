@@ -31,7 +31,7 @@ def frame_candidates(rate: int, min_ms: int, max_ms: int) -> Generator[int, None
             break
 
 
-def stft(a: Audio, window: np.ndarray, step_length: int) -> Generator[np.ndarray, None, None]:
+def stft(a: Audio, window: np.ndarray, step_length: int = None) -> Generator[np.ndarray, None, None]:
     """短時間フーリエ変換
     
     step_length(ミリ秒)ごとにオーディオデータを窓関数で切り取っていき、それぞれ高速フーリエ変換する。

@@ -24,25 +24,35 @@ class Audio:
         
         plt.plot(time_axis(self.data, self.rate), self.data)
         
-    def each_frame(self, n_frame: int, step_ms: int) -> Generator[np.ndarray, None, None]:
+    def each_frame(self, n_frame: int, step_ms: int = None) -> Generator[np.ndarray, None, None]:
         """オーディオデータを指定したフレーム長で切り取っていくジェネレータを取得する。
         
         Args:
             n_frame (int): フレーム長
-            step_ms (int): ずらす長さ(ミリ秒)
+            step_ms (int): ずらす長さ(ミリ秒)(任意)
 
         Yields:
             np.ndarray[shape=(n_frame,)]: オーディオデータをフレーム長で切り取ったデータ。
-            step_ms(ミリ秒)ずつずらしながら切り取っていく。
+            step_ms(ミリ秒)ずつずらしながら切り取っていく。step_ms を指定しない場合は n_frame // 4 とする。
             余った部分は取得しない。
         """
         
-        step = self.rate * step_ms // 1000
+        if step_ms is None:
+            step = n_frame // 4
+        else:
+            step = self.rate * step_ms // 1000
         
         i = 0
         n = len(self.data)
-        while i+n_frame <= n:
-            yield self.data[i:i+n_frame]
+        while i < n:
+            frame = self.data[i:i+n_frame]
+            if frame.shape[0] < n_frame:
+                v = np.empty(n_frame, dtype=frame.dtype)
+                v[:frame.shape[0]] = frame
+                v[frame.shape[0]:] = 0
+                frame = v
+
+            yield frame
             i += step
 
     def high_pass_filtered(self) -> 'Audio':
