@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Generator
+from typing import Generator, Callable
 import itertools
 
 from .audio import Audio
@@ -91,8 +91,8 @@ def mel_filter_bank(fs: int, n: int, n_bins: int, mel_param=700) -> np.ndarray:
         np.ndarray[shape=(n, n_bins), dtype=float]: メルフィルタバンク
     """
 
-    mel_scaled = mel_scale(mel_param)
-    imel_scaled = imel_scale(mel_param)
+    mel_scaled: Callable[[float], float] = mel_scale(mel_param)
+    imel_scaled: Callable[[float], float] = imel_scale(mel_param)
 
     mel_end = int(mel_scaled(fs)) + 1
 
@@ -127,8 +127,8 @@ def mel_filter_bank_freq(fs: int, n_bins: int, mel_param=700) -> np.ndarray:
         np.ndarray[shape=(n_bins,), dtype=float]: メル尺度上で等間隔の周波数軸。三角窓の頂点の値を取る。
     """
 
-    mel_scaled = mel_scale(mel_param)
-    imel_scaled = imel_scale(mel_param)
+    mel_scaled: Callable[[float], float] = mel_scale(mel_param)
+    imel_scaled: Callable[[float], float] = imel_scale(mel_param)
 
     mel_end = mel_scaled(fs)
     return imel_scaled(np.arange(1, n_bins + 1) * (mel_end / (n_bins + 1)))
