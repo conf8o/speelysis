@@ -18,12 +18,11 @@ class Audio:
     def __init__(self, rate: int, data: np.ndarray):
         self.data = data.astype(np.float64)
         self.rate = rate
-        self.times = time_axis(self.data, self.rate)
 
     def plot(self) -> None:
         """横軸を時間軸、縦軸をオーディオデータとしたグラフをプロットする。"""
         
-        plt.plot(self.times, self.data)
+        plt.plot(time_axis(self.data, self.rate), self.data)
         
     def each_frame(self, n_frame: int, step_ms: int) -> Generator[np.ndarray, None, None]:
         """オーディオデータを指定したフレーム長で切り取っていくジェネレータを取得する。
