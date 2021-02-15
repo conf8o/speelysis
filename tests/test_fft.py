@@ -1,5 +1,5 @@
-import speelysis.study as study
+import speelysis
 
 
 def test_fft():
-    assert study.fft
+    assert speelysis.fft

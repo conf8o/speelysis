@@ -72,7 +72,7 @@ def tri_window(fs: int, n: int, l: float, r: float) -> np.ndarray:
     
     a = np.zeros(int(l))
     b = np.linspace(0, 1, edge)
-    c = np.linspace(0, 1, edge)[::-1]
+    c = np.linspace(0, 1-1/edge, edge)[::-1]
     
     f = np.concatenate([a, b, c])
     return np.append(f, np.zeros(n - len(f)))

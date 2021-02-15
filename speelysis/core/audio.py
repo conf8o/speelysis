@@ -30,10 +30,10 @@ class Audio:
         Args:
             n_frame (int): フレーム長
             step_ms (int): ずらす長さ(ミリ秒)(任意)
+                step_ms(ミリ秒)ずつずらしながら切り取っていく。step_ms を指定しない場合は n_frame // 4 とする。
 
         Yields:
             np.ndarray[shape=(n_frame,)]: オーディオデータをフレーム長で切り取ったデータ。
-            step_ms(ミリ秒)ずつずらしながら切り取っていく。step_ms を指定しない場合は n_frame // 4 とする。
             余った部分は取得しない。
         """
         
